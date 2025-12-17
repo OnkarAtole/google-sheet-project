@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Google Sheet App</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f8;
+    padding: 20px;
+}
+#header {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+form, .upload {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+input, button {
+    padding: 8px;
+    margin: 5px;
+}
+button {
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+th {
+    background: #007bff;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+    <div id="header">
+    <h1>Google Sheet Implementation App</h1>
+    </div>
+
+<h2>Add Product</h2>
+<form onsubmit="addProduct(event)">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="number" id="price" placeholder="Price" required>
+    <input type="number" id="quantity" placeholder="Quantity" required>
+    <button type="submit" style="background: blue; color: white; padding: 10px;"
+  onmouseover="this.style.background='green'"
+  onmouseout="this.style.background='blue'">Add</button>
+</form>
+
+<h2>Upload Excel</h2>
+<div class="upload">
+    <input type="file" id="excelFile">
+    <button onclick="uploadExcel()" style="background: blue; color: white; padding: 10px;"
+  onmouseover="this.style.background='green'"
+  onmouseout="this.style.background='blue'">Upload</button>
+</div>
+
+<h2>Search</h2>
+<input type="text" id="search" placeholder="Search..." onkeyup="searchTable()">
+
+<h2>Sheet Data</h2>
+<table id="dataTable"></table>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+/* ---------------- ADD PRODUCT ---------------- */
+async function addProduct(e) {
+    e.preventDefault();
+
+    // ✅ FIX: DEFINE INPUTS
+    const nameInput = document.getElementById("name");
+    const priceInput = document.getElementById("price");
+    const quantityInput = document.getElementById("quantity");
+
+    const data = {
+        name: nameInput.value,
+        price: parseInt(priceInput.value),
+        quantity: parseInt(quantityInput.value)
+    };
+
+    await fetch(`${API}/add-product`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    nameInput.value = "";
+    priceInput.value = "";
+    quantityInput.value = "";
+
+    fetchData();
+}
+
+/* ---------------- UPLOAD EXCEL ---------------- */
+function uploadExcel() {
+    
+    const fileInput = document.getElementById("excelFile");
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Select an Excel file");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const workbook = XLSX.read(e.target.result, { type: "binary" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        await fetch(`${API}/upload-excel`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ data })
+        });
+                fileInput.value = "";
+        fetchData();
+    };
+
+    reader.readAsBinaryString(file);
+}
+
+/* ---------------- FETCH DATA ---------------- */
+async function fetchData() {
+    const res = await fetch(`${API}/fetch`);
+    const data = await res.json();
+
+    const table = document.getElementById("dataTable");
+    table.innerHTML = "";
+
+    data.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+            const el = document.createElement(i === 0 ? "th" : "td");
+            el.innerText = cell;
+            tr.appendChild(el);
+        });
+        table.appendChild(tr);
+    });
+}
+
+/* ---------------- SEARCH ---------------- */
+function searchTable() {
+    const input = document.getElementById("search").value.toLowerCase();
+    const rows = document.querySelectorAll("#dataTable tr");
+
+    rows.forEach((row, i) => {
+        if (i === 0) return;
+        row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+    });
+}
+
+fetchData();
+</script>
+
+</body>
+</html>
