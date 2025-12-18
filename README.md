@@ -1,11 +1,4 @@
-Perfect 👍
-Below is a **complete `README.md`** that includes **Backend (FastAPI + Google Sheets)** **and Frontend** for your repository:
 
-👉 **Repo:** [https://github.com/OnkarAtole/google-sheet-project.git](https://github.com/OnkarAtole/google-sheet-project.git)
-
-You can copy-paste this directly into `README.md`.
-
----
 
 # 📊 Google Sheet Data API (FastAPI + Frontend)
 
