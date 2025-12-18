@@ -119,6 +119,7 @@ GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 
 ⚠️ **Never upload `Credentials.json` to GitHub**
 🔐 Steps to Get Credentials.json
+
 1️⃣ Open Google Cloud Console
 
 👉 https://console.cloud.google.com
