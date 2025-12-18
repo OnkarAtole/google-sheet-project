@@ -118,7 +118,68 @@ GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 ```
 
 ⚠️ **Never upload `Credentials.json` to GitHub**
+🔐 Steps to Get Credentials.json
+1️⃣ Open Google Cloud Console
 
+👉 https://console.cloud.google.com
+
+2️⃣ Create New Project
+
+Click Select Project → New Project
+
+Project Name: Google-Sheet-API
+
+Click Create
+
+3️⃣ Enable Google Sheets API
+
+Go to APIs & Services → Library
+
+Search Google Sheets API
+
+Click Enable
+
+4️⃣ Create Service Account
+
+Go to APIs & Services → Credentials
+
+Click Create Credentials → Service Account
+
+Fill:
+
+Name: sheet-api-service
+
+Role: Editor
+
+Click Done
+
+5️⃣ Download Credentials.json
+
+Open service account
+
+Go to Keys → Add Key → Create New Key
+
+Select JSON
+
+📥 File downloads automatically
+
+6️⃣ Share Google Sheet
+
+Open your Google Sheet
+
+Click Share
+
+Add service account email
+
+Give Editor access
+
+7️⃣ Convert JSON to ENV (Recommended)
+
+Instead of using file directly, paste entire JSON inside .env:
+
+GOOGLE_SERVICE_ACCOUNT_JSON={...full json...}
+
+Backend code already supports this securely.
 ---
 
 ## ▶️ Run Backend Locally
